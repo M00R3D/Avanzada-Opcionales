@@ -3,7 +3,7 @@ const ctx = myCanvas.getContext("2d");
 let drawing = false;let var_x = 0;let var_y = 0;
 
 ctx.strokeStyle = "blue";
-ctx.lineWidth = 5; 
+ctx.lineWidth = 10; 
 ctx.lineCap = "round";
 
 myCanvas.addEventListener("mousedown", (e) => {
