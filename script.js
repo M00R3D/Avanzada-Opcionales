@@ -6,6 +6,8 @@ ctx.strokeStyle = "blue";
 ctx.shadowColor = "blue";
 ctx.lineWidth = 6; 
 ctx.lineCap = "round";
+ctx.setLineDash([2, 19]);
+
 myCanvas.addEventListener("mousedown", (e) => {
     drawing = true; 
         ctx.shadowBlur=4;
