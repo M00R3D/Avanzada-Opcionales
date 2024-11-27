@@ -4,13 +4,13 @@ let drawing = false;let var_x = 0;let var_y = 0;
 
 ctx.strokeStyle = "blue";
 ctx.shadowColor = "blue";
-ctx.lineWidth = 6; 
+ctx.lineWidth = 4; 
 ctx.lineCap = "round";
-ctx.setLineDash([2, 19]);
+// ctx.setLineDash([2, 19]);
 
 myCanvas.addEventListener("mousedown", (e) => {
     drawing = true; 
-        ctx.shadowBlur=4;
+        // ctx.shadowBlur=4;
         var_x = e.clientX - myCanvas.getBoundingClientRect().left;
         var_y = e.clientY - myCanvas.getBoundingClientRect().top;
 });
