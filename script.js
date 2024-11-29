@@ -1,130 +1,82 @@
-const canvas = document.getElementById("drawingCanvas");
-const ctx = canvas.getContext("2d");
-let drawing = false;
-let tool = "pencil";
-let color = "#000000";
-let lineWidth = 5;
-let isFilled = false;
-let startX, startY;
+const lienzo = document.getElementById("clockCanvas");
+const contexto = lienzo.getContext("2d");
 
-const colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF"];
-document.getElementById("tool").addEventListener("change", (e) => {
-    tool = e.target.value;
-});
+const radioReloj = lienzo.width / 2;
+const centroX = lienzo.width / 2;
+const centroY = lienzo.height / 2;
 
-document.getElementById("lineWidth").addEventListener("input", (e) => {
-    lineWidth = parseInt(e.target.value, 10);
-});
+function dibujarReloj() {
+    contexto.clearRect(0, 0, lienzo.width, lienzo.height);
 
-document.getElementById("fillToggle").addEventListener("click", () => {
-    isFilled = !isFilled;
-    document.getElementById("fillToggle").innerText = `Figura rellena: ${isFilled ? "ON" : "OFF"}`;
-});
+    contexto.beginPath();
+    contexto.arc(centroX, centroY, radioReloj - 10, 0, Math.PI * 2);
+    contexto.fillStyle = "white";
+    contexto.fill();
+    contexto.lineWidth = 10;
+    contexto.strokeStyle = "black";
+    contexto.stroke();
+    contexto.closePath();
 
-document.getElementById("clearCanvas").addEventListener("click", () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-});
+    dibujarNumeros();
 
-document.getElementById("downloadImage").addEventListener("click", () => {
-    const link = document.createElement("a");
-    link.download = "drawing.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-});
+    const ahora = new Date();
+    dibujarManecillas(ahora);
 
-const colorContainer = document.getElementById("colorContainer");
-colors.forEach((col) => {
-    const colorButton = document.createElement("button");
-    colorButton.style.backgroundColor = col;
-    colorButton.className = "btn btn-sm";
-    colorButton.style.width = "40px";
-    colorButton.style.height = "40px";
-    colorButton.style.margin = "5px";
-    colorButton.addEventListener("click", () => {
-        color = col;
-    });
-    colorContainer.appendChild(colorButton);
-});
+    contexto.beginPath();
+    contexto.arc(centroX, centroY, 5, 0, Math.PI * 2);
+    contexto.fillStyle = "black";
+    contexto.fill();
+    contexto.closePath();
+}
 
-canvas.addEventListener("mousedown", (e) => {
-    drawing = true;
-    startX = e.offsetX;
-    startY = e.offsetY;
-    if (tool === "pencil" || tool === "eraser") {
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-    }
-});
-
-canvas.addEventListener("mousemove", (e) => {
-    if (!drawing) return;
-
-    const x = e.offsetX;
-    const y = e.offsetY;
-
-    if (tool === "pencil") {
-        ctx.strokeStyle = color;
-        ctx.lineWidth = lineWidth;
-        ctx.lineTo(x, y);
-        ctx.stroke();
-    } else if (tool === "eraser") {
-        ctx.clearRect(x - lineWidth / 2, y - lineWidth / 2, lineWidth, lineWidth);
-    }
-});
-
-canvas.addEventListener("mouseup", (e) => {
-    if (!drawing) return;
-    const x = e.offsetX;
-    const y = e.offsetY;
-    ctx.lineWidth = lineWidth;
-
-    if (tool === "rectangle") {
-        const width = x - startX;
-        const height = y - startY;
-        drawRectangle(startX, startY, width, height);
-    } else if (tool === "circle") {
-        const radius = Math.sqrt((x - startX) ** 2 + (y - startY) ** 2);
-        drawCircle(startX, startY, radius);
-    } else if (tool === "triangle") {
-        drawTriangle(startX, startY, x, y);
-    }
-
-    drawing = false;
-});
-
-function drawRectangle(x, y, width, height) {
-    if (isFilled) {
-        ctx.fillStyle = color;
-        ctx.fillRect(x, y, width, height);
-    } else {
-        ctx.strokeStyle = color;
-        ctx.strokeRect(x, y, width, height);
+function dibujarNumeros() {
+    contexto.font = `${radioReloj * 0.1}px Arial`;
+    contexto.textAlign = "center";
+    contexto.textBaseline = "middle";
+    for (let num = 1; num <= 12; num++) {
+        const angulo = (Math.PI / 6) * (num - 3);
+        const x = centroX + Math.cos(angulo) * (radioReloj - 40);
+        const y = centroY + Math.sin(angulo) * (radioReloj - 40);
+        contexto.fillStyle = "black";
+        contexto.fillText(num.toString(), x, y);
     }
 }
 
-function drawCircle(x, y, radius) {
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
-    if (isFilled) {
-        ctx.fillStyle = color;
-        ctx.fill();
-    } else {
-        ctx.strokeStyle = color;
-        ctx.stroke();
-    }
+function dibujarManecillas(ahora) {
+    const horas = ahora.getHours() % 12;
+    const minutos = ahora.getMinutes();
+    const segundos = ahora.getSeconds();
+
+    dibujarManecilla(
+        (Math.PI / 6) * horas + (Math.PI / 360) * minutos,
+        radioReloj * 0.5,
+        8,
+        "black"
+    );
+
+    dibujarManecilla(
+        (Math.PI / 30) * minutos + (Math.PI / 1800) * segundos,
+        radioReloj * 0.7,
+        6,
+        "gray"
+    );
+
+    dibujarManecilla((Math.PI / 30) * segundos, radioReloj * 0.8, 2, "red");
 }
 
-function drawTriangle(x1, y1, x2, y2) {
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.lineTo(x1 * 2 - x2, y2);
-    ctx.closePath();
-    if (isFilled) {
-        ctx.fillStyle = color;
-        ctx.fill();
-    } else {
-        ctx.strokeStyle = color;
-        ctx.stroke();
-    }
+function dibujarManecilla(angulo, longitud, grosor, color) {
+    contexto.beginPath();
+    contexto.moveTo(centroX, centroY);
+    contexto.lineTo(
+        centroX + Math.cos(angulo - Math.PI / 2) * longitud,
+        centroY + Math.sin(angulo - Math.PI / 2) * longitud
+    );
+    contexto.lineWidth = grosor;
+    contexto.strokeStyle = color;
+    contexto.lineCap = "round";
+    contexto.stroke();
+    contexto.closePath();
 }
+
+setInterval(dibujarReloj, 1000);
+dibujarReloj();
