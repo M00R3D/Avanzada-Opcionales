@@ -3,16 +3,14 @@ const ctx = myCanvas.getContext("2d");
 let drawing = false;
 let var_x = 0;
 let var_y = 0;
-
 function drawCircle(x, y) {
-    const radius = 14; 
+    if (Math.random() > 0.7) return;
+    const radio = Math.random() * 10 + 5;
+    const opacidad = Math.random() * 0.7 + 0.2;
     ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2); 
-    ctx.fillStyle = "red";
+    ctx.arc(x, y, radio, 0, Math.PI * 2); 
+    ctx.fillStyle = `rgba(255, 0, 0, ${opacidad})`;
     ctx.fill();
-    ctx.strokeStyle = "black";
-    ctx.lineWidth = 1;
-    ctx.stroke();
 }
 
 myCanvas.addEventListener("mousedown", (e) => {
