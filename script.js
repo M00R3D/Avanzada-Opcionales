@@ -3,29 +3,39 @@ const ctx = myCanvas.getContext("2d");
 let drawing = false;
 let var_x = 0;
 let var_y = 0;
-function drawCircle(x, y) {
-    if (Math.random() > 0.7) return;
-    const radio = Math.random() * 10 + 5;
-    const opacidad = Math.random() * 0.7 + 0.2;
+function drawStar(cx, cy, spikes, outerRadius, innerRadius) {
+    const step = Math.PI / spikes;
     ctx.beginPath();
-    ctx.arc(x, y, radio, 0, Math.PI * 2); 
-    ctx.fillStyle = `rgba(255, 0, 0, ${opacidad})`;
+    for (let i = 0; i < spikes * 2; i++) {
+        const radius = i % 2 === 0 ? outerRadius : innerRadius;
+        const angle = i * step;
+        const x = cx + Math.cos(angle) * radius;
+        const y = cy + Math.sin(angle) * radius;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = "white";
     ctx.fill();
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 1;
+    ctx.stroke();
 }
 
 myCanvas.addEventListener("mousedown", (e) => {
     drawing = true;
     var_x = e.clientX - myCanvas.getBoundingClientRect().left;
     var_y = e.clientY - myCanvas.getBoundingClientRect().top;
-    drawCircle(var_x, var_y);
+    drawStar(var_x, var_y, 5, 15, 7);
 });
 
 myCanvas.addEventListener("mousemove", (e) => {
     if (!drawing) return;
     const x = e.clientX - myCanvas.getBoundingClientRect().left;
     const y = e.clientY - myCanvas.getBoundingClientRect().top;
-    drawCircle(x, y);
+    drawStar(x, y, 5, 15, 7);
 });
+
 
 myCanvas.addEventListener("mouseup", () => {drawing = false;});
 myCanvas.addEventListener("mouseleave", () => {drawing = false;});
